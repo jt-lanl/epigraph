@@ -143,4 +143,4 @@ This program was produced under U.S. Government contract 89233218CNA000001 for L
 
 # LICENSE (GPLv3)
 
-This software is open source under the GNU General Public License ; version 3.0 of the License. See file `GPLv3.pdf` for details.
+This software is open source under the GNU General Public License ; version 3.0 of the License. See `LICENSE` file for details.
