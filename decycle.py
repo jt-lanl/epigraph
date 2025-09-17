@@ -135,7 +135,8 @@ def remove_edges_in_scc(G,scc,edgecostfcn=rss_edgecost):
     Gsub = nx.subgraph(G,scc).copy()  ## Gsub is frozen by default?
     while True: ## len(elist) < 50: ## True:
         #(a,b) = random.sample(scc,2)
-        a, = random.sample(scc,1)
+        v.vprint("scc:",type(scc),len(scc))
+        a, = random.sample(list(scc),1)
         #i = random.randint(0,len(scc)-2)
         #(a,b) = scc[i:i+2]
         try:
