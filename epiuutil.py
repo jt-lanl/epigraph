@@ -51,6 +51,8 @@ def seq_filter_repeats(seqs,tmr):
     ''' Return a list of SequenceSample's which avoids those
     sequences with too many repeats (more than tmr)
     '''
+    ## ie, too many epitopes that are repeated
+    ## (not one epitope that is repeated too much)
 
     if tmr == 0:
         return seqs
