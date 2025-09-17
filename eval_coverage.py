@@ -1,6 +1,5 @@
 '''Evaluate Coverage of a set of centroids on an input sequence list'''
 
-
 import re
 import random
 import argparse
@@ -9,16 +8,11 @@ import numpy as np   ## used for statistics of bootstrap results
 
 import verbose as v
 import sequtil
-#from sequtil import read_tbl,seq_filter_repeats,epitope_tally,remove_bad_epitopes
 
 import config ## defines globals; specifically EPIMER
 import epiuutil as eu
 import episequtil as epsu
 import offby_count as oc
-#from offby_count import mkobarray,offby_count_with_obarray
-
-
-
 
 DASH='-'
 BADCHAR='x'
@@ -26,19 +20,26 @@ BADCHAR='x'
 def getargs():
     parser = argparse.ArgumentParser(description=__doc__)
     paa = parser.add_argument
-    paa("-E",help="Epitope length",type=int,required=True)
-    paa("-M",help="Number of antigens to read from vaccine file",type=int,default=0)
-    paa("-B",help="Number of bootstraps to evaluate error",type=int,default=0)
-    paa("--usebadepi",help="Put bad epitopes in denominator?",action="store_true")
+    paa("-E",type=int,default=9,
+        help="Epitope length")
+    paa("--inseq","-i",
+        help="input target population sequence filename")
+    paa("--epigraphinput","-e",
+        help="input epigraph (centroid/antigen/vaccine) filename")
+    paa("-M",type=int,default=0,
+        help="Number of antigens to read from vaccine file")
+    paa("-B",type=int,default=0,
+        help="Number of bootstraps to evaluate error")
+    paa("--usebadepi",action="store_true",
+        help="Put bad epitopes in denominator?")
     paa("--usecounts",action="store_true",
         help="Use counts (not fractions) for epitope coverage")
-    paa("--rare",help="Include stats on rarest epitope",action="store_true")
-    paa("--offby",help="Evaluate off-by-one(or two...) coverage",type=int,default=0)
-    #not currently implemented
-    #paa("--tmr",type=int,default=0,
-    #    help="(too many repeats) remove strings with more than TMR repeats")
-    paa("--incen",help="input centroid/antigen/vaccine file name")
-    paa("--inseq",help="input target population sequence filename")
+    paa("--rare",action="store_true",
+        help="Include stats on rarest epitope")
+    paa("--offby",type=int,default=0,
+        help="Evaluate off-by-one(or two...) coverage")
+    paa("--tmr",type=int,default=0,
+        help="(too many repeats) remove strings with more than TMR repeats")
     paa("--verbose","-v",action="count",default=0,
         help="verbose")
     args = parser.parse_args()
@@ -58,17 +59,17 @@ def epitope_tally_total(seqs,bad_epitopes_in_denominator=False):
 def main(args):
     """main eval_coverage"""
     
-    config.EPIMER=EPIMER=args.E
+    config.EPIMER=args.E
 
     seqs = sequtil.read_seqfile(args.inseq,rmdash=True,badchar=BADCHAR)
-    ## seqs = seq_filter_repeats(seqs,args.tmr) ## fixme
     seqs = list(seqs)
+    seqs = eu.seq_filter_repeats(seqs,args.tmr)
 
-    cent = sequtil.read_seqfile(args.incen,rmdash=True)
+    cent = sequtil.read_seqfile(args.epigraphinput,rmdash=True)
     cent = list(cent)
     if args.M > len(cent):
         raise RuntimeError(f"fewer than C={arg.m} sequences"
-                           f"in file: {args.incen}")
+                           f"in file: {args.epigraphinput}")
     if args.M <= 0:
         args.M = len(cent)
     if args.M < len(cent):
@@ -136,10 +137,7 @@ def main(args):
                          if seq_epicount[epi] == rarest]
             print("%8d" % len(rarecount),end="")
 
-
         print()
-
-
 
 if __name__ == "__main__":
     _args = getargs()
